@@ -21,17 +21,17 @@ class ItemGenre(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
 
     def __str__(self):
-        return self.genre_name
+        return f'{self.genre_name} (id={self.id})'
 
 class Item(models.Model):
     genre_id = models.ForeignKey(ItemGenre, on_delete=models.PROTECT)
-    name = models.CharField(max_length=50)
+    item_name = models.CharField(max_length=50)
     price = models.IntegerField()
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
     def __str__(self):
-        return self.name
+        return f'{self.item_name} (id={self.id})'
 
 class OrderDetail(models.Model):
     item_id = models.ForeignKey(Item, on_delete=models.CASCADE)
@@ -47,7 +47,7 @@ class Option(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
 
     def __str__(self):
-        return self.option_name
+        return f'{self.option_name} (id={self.id})'
 
 class OrderedOption(models.Model):
     option_id = models.ForeignKey(Option, on_delete=models.CASCADE)
