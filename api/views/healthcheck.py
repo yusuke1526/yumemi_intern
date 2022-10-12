@@ -1,0 +1,5 @@
+from django.http import HttpResponse
+
+# Create your views here.
+def healthcheck(request):
+    return HttpResponse(status=200)
