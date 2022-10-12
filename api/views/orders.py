@@ -5,11 +5,7 @@ from django.http import HttpResponse, JsonResponse, HttpResponseBadRequest
 from django.views.decorators.csrf import csrf_exempt
 from django.core.exceptions import ObjectDoesNotExist
 
-from .models import Order, OrderDetail, OrderedOption, Item, Table, Option, AvailableOption
-
-# Create your views here.
-def healthcheck(request):
-    return HttpResponse(status=200)
+from ..models import Order, OrderDetail, OrderedOption, Item, Table, Option, AvailableOption
 
 @csrf_exempt
 def clients_orders(request):
