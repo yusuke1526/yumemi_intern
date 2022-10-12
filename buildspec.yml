@@ -17,7 +17,7 @@ phases:
             - aws ecr --region ap-northeast-1 get-login-password | docker login --username AWS --password-stdin https://${AWS_ACCOUNT_ID}.dkr.ecr.ap-northeast-1.amazonaws.com/sbcntr-backend
             - REPOSITORY_URI=${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION_NAME}.amazonaws.com/${ECR_REPOSITORY_NAME}
             # タグ名にGitのコミットハッシュを利用
-            - IMAGE_TAG=$(echo ${CODEBUILD_RESOLVED_SOURCE_VERSION} | cut -c 1-7)
+            - IMAGE_TAG=latest
             # 事前準備: trivyをインストール
             # コメントにあるcurlコマンドを利用して最新バージョンを取得も可能
             #- TRIVY_VERSION=$(curl -sS https://api.github.com/repos/aquasecurity/trivy/releases/latest | grep '"tag_name":' | sed -E 's/.*"v([^"]+)".*/\1/')
