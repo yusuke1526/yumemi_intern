@@ -37,11 +37,8 @@ phases:
         commands:
             # trivyによるイメージスキャン(結果格納用)
             - trivy --no-progress -f json -o trivy_results.json --exit-code 0 ${REPOSITORY_URI}:${IMAGE_TAG}
-            # trivyによるイメージスキャン(CRITICALレベルの脆弱性ある場合はBuild強制終了)
-            - trivy --no-progress --exit-code 1 --severity CRITICAL ${REPOSITORY_URI}:${IMAGE_TAG}
-            - exit `echo $?`
-            # dockleによるイメージチェック(FATALレベルの脆弱性ある場合はBuild強制終了)
-            - dockle --format json -o dockle_results.json --exit-code 1 --exit-level "FATAL" ${REPOSITORY_URI}:${IMAGE_TAG}
+            # dockleによるイメージチェック(結果格納)
+            - dockle --format json -o dockle_results.json --exit-code 0 ${REPOSITORY_URI}:${IMAGE_TAG}
             - exit `echo $?`
             # DockerイメージをECRへプッシュ
             - docker image push ${REPOSITORY_URI}:${IMAGE_TAG}
