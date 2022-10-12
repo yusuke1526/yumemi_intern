@@ -7,6 +7,57 @@ from django.core.exceptions import ObjectDoesNotExist
 
 from ..models import Order, OrderDetail, OrderedOption, Item, Table, Option, AvailableOption
 
+def validate_requests(data):
+    validated_requests = {}
+
+    # tableのチェック
+    try:
+        validated_requests['table'] = Table.objects.get(id=data['table_id'])
+    except KeyError:
+        return JsonResponse({"message": "Missing required field table_id"}, status=400)
+    except ObjectDoesNotExist:
+        return JsonResponse({"message": "Table not found"}, status=400)
+
+    # order_detailsのチェック
+    try:
+        order_details = data['order_details']
+    except KeyError: 
+        return JsonResponse({"message": "Missing required field order_details"}, status=400)
+
+    order_details_objects = [0] * len(order_details)
+    # DB登録前に全ての値をチェック
+    for i, order_item in enumerate(order_details):
+        order_detail = {}
+        # item_idをチェック
+        try:
+            item = Item.objects.get(id=order_item['item_id'])
+        except KeyError:
+            return JsonResponse({"message": "Missing required field item_id"}, status=400)
+        except ObjectDoesNotExist:
+            return JsonResponse({"message": "Item not found"}, status=400)
+        order_detail['item'] = item
+
+        # optionsをチェック
+        try: options = order_item['options']
+        except KeyError: return JsonResponse({"message": "Missing required field options"}, status=400)
+
+        order_detail['options'] = [0] * len(options)
+
+        for j, option in enumerate(options):
+            # option_idをチェック
+            try:
+                option = Option.objects.get(id=option['option_id'])
+            except ObjectDoesNotExist:
+                return JsonResponse({"message": "Option not found"}, status=400)
+            if not AvailableOption.objects.filter(option_id=option, item_id=item).exists():
+                return JsonResponse({"message": "Chosen option is unavailable for that item"}, status=400)
+            order_detail['options'][j] = option
+            
+        order_details_objects[i] = order_detail
+
+    validated_requests['order_details_objects'] = order_details_objects
+    return validated_requests
+
 @csrf_exempt
 def clients_orders(request):
     '''
@@ -63,40 +114,12 @@ def clients_orders(request):
     # リクエストを取得
     body = request.body.decode('utf-8')
     data = json.loads(body)
-    try: order_details = data['order_details']
-    except KeyError: return JsonResponse({"message": "Missing required field order_details"}, status=400)
-    table = Table.objects.get(id=data['table_id'])
 
-    order_details_objects = [0] * len(order_details)
-    # DB登録前に全ての値をチェック
-    for i, order_item in enumerate(order_details):
-        order_detail = {}
-        # item_idをチェック
-        try:
-            item = Item.objects.get(id=order_item['item_id'])
-        except KeyError:
-            return JsonResponse({"message": "Missing required field item_id"}, status=400)
-        except ObjectDoesNotExist:
-            return JsonResponse({"message": "Item not found"}, status=400)
-        order_detail['item'] = item
-
-        # optionsをチェック
-        try: options = order_item['options']
-        except KeyError: return JsonResponse({"message": "Missing required field options"}, status=400)
-
-        order_detail['options'] = [0] * len(options)
-
-        for j, option in enumerate(options):
-            # option_idをチェック
-            try:
-                option = Option.objects.get(id=option['option_id'])
-            except ObjectDoesNotExist:
-                return JsonResponse({"message": "Option not found"}, status=400)
-            if not AvailableOption.objects.filter(option_id=option, item_id=item).exists():
-                return JsonResponse({"message": "Chosen option is unavailable for that item"}, status=400)
-            order_detail['options'][j] = option
-            
-        order_details_objects[i] = order_detail
+    # validate
+    response = validate_requests(data)
+    if type(response) == JsonResponse: return response
+    table = response['table']
+    order_details_objects = response['order_details_objects']
 
     # Orderレコードの作成
     order = Order(table_id=table)
@@ -118,6 +141,12 @@ def clients_orders(request):
         )
         order_detail.save()
 
+        output_order_details['item'] = {
+            'item_id': order_item['item'].id,
+            'item_name': order_item['item'].item_name,
+            'price': order_item['item'].price
+        }
+
         options = order_item['options']
         output_order_details['options'] = [0] * len(options)
 
@@ -132,12 +161,6 @@ def clients_orders(request):
                 'option_name': option.option_name
             }
         
-        output_order_details['item'] = {
-            'item_id': item.id,
-            'item_name': item.item_name,
-            'price': item.price
-        }
-
         output['order_details'][i] = output_order_details
 
     return JsonResponse(output, status=201)
