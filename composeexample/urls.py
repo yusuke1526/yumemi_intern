@@ -21,4 +21,5 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('healthcheck', views.healthcheck),
     path('clients/orders', views.clients_orders),
+    path('clients/menu', views.clients_menu),
 ]
