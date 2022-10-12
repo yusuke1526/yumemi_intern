@@ -81,7 +81,7 @@
     "EC2",
     "FARGATE"
   ],
-  "taskDefinitionArn": "arn:aws:ecs:ap-northeast-1:280107060642:task-definition/sbcntr-backend-def:3",
+  "taskDefinitionArn": "arn:aws:ecs:ap-northeast-1:280107060642:task-definition/sbcntr-backend-def:latest",
   "family": "sbcntr-backend-def",
   "requiresAttributes": [
     {
