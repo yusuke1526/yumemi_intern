@@ -6,4 +6,4 @@ ADD requirements.txt /code/
 RUN pip install -r requirements.txt
 ADD . /code/
 EXPOSE 80
-ENTRYPOINT ["python3","/code/manage.py","migrate","&&","python3","/code/manage.py","runserver","0.0.0.0:80"]
+ENTRYPOINT ["/bin/sh","/code/entrypoint.sh"]
