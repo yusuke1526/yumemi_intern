@@ -9,12 +9,11 @@ https://docs.djangoproject.com/en/4.1/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.1/ref/settings/
 """
-
+import os
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
-
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.1/howto/deployment/checklist/
@@ -26,7 +25,6 @@ SECRET_KEY = 'django-insecure-rf+#ix*7%t@y#sr^(5&zqsjie^p%xx$x7syllxq$ol@i+l4g*6
 DEBUG = True
 
 ALLOWED_HOSTS = []
-
 
 # Application definition
 
@@ -70,21 +68,19 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'composeexample.wsgi.application'
 
-
 # Database
 # https://docs.djangoproject.com/en/4.1/ref/settings/#databases
 
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'postgres',
-        'USER': 'postgres',
-        'PASSWORD': 'postgres',
-        'HOST': 'db',
+        'NAME': os.environ.get('DB_NAME', 'postgres'),
+        'USER': os.environ.get('DB_USERNAME', 'postgres'),
+        'PASSWORD': os.environ.get('DB_PASSWORD', 'postgres'),
+        'HOST': os.environ.get('DB_HOST', 'db'),
         'PORT': 5432,
     }
 }
-
 
 # Password validation
 # https://docs.djangoproject.com/en/4.1/ref/settings/#auth-password-validators
@@ -104,7 +100,6 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-
 # Internationalization
 # https://docs.djangoproject.com/en/4.1/topics/i18n/
 
@@ -115,7 +110,6 @@ TIME_ZONE = 'UTC'
 USE_I18N = True
 
 USE_TZ = True
-
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.1/howto/static-files/
