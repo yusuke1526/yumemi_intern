@@ -37,32 +37,28 @@ def clients_menu(request):
         ]
     }
     '''
-    output = {}
-    item_genres = ItemGenre.objects.all()
-    output['genres'] = [0] * len(item_genres)
-    for i, item_genre in enumerate(item_genres):
-        output['genres'][i] = {
-            'genre_id': item_genre.id,
-            'genre_name': item_genre.genre_name,
-        }
-        
-        items = Item.objects.filter(genre_id=item_genre.id)
-        output['genres'][i]['items'] = [0] * len(items)
-        for j, item in enumerate(items):
-            output['genres'][i]['items'][j] = {
-                'item_id': item.id,
-                'item_name': item.item_name,
-                'price': item.price,
-            }
+    # genre, item, available_optionを全て取得
+    item_genres_queryset = ItemGenre.objects.all()
+    items_queryset = Item.objects.select_related("genre_id").all()
+    available_options_queryset = AvailableOption.objects.select_related("item_id__genre_id", "option_id").all()
 
-            available_options = AvailableOption.objects.filter(item_id=item.id)
-            output['genres'][i]['items'][j]['available_options'] = [0] * len(available_options)
-            for k, available_option in enumerate(available_options):
-                print(available_option.option_id)
-                option = available_option.option_id
-                output['genres'][i]['items'][j]['available_options'][k] = {
-                    'option_id': option.id,
-                    'option_name': option.option_name,
-                }
-        
+    # 整形しやすいようにkeyにidを持つdictionaryを作成
+    genres = {item_genre.id: {"genre_id": item_genre.id, "genre_name": item_genre.genre_name, "items": {}} for item_genre in item_genres_queryset}
+
+    for item in items_queryset:
+        genre_id = item.genre_id.id
+        genres[genre_id]["items"][item.id] = {"item_id": item.id, "item_name": item.item_name, "price": item.price, "available_options": []}
+
+    for available_option in available_options_queryset:
+        option = available_option.option_id
+        item = available_option.item_id
+        genre_id = item.genre_id.id
+        item_id = item.id
+        genres[genre_id]["items"][item_id]["available_options"].append({"option_id": option.id, "option_name": option.option_name})
+
+    # JSONの形式に整形
+    output = {"genres": list(genres.values())}
+    for genre in output['genres']:
+        genre['items'] = list(genre['items'].values())
+
     return JsonResponse(output, status=200)
