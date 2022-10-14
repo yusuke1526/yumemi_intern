@@ -1,0 +1,85 @@
+{
+	"genres": [
+		{
+			"genre_id": 1,
+			"genre_name": "握り",
+			"items": [
+				{
+					"item_id": 1,
+					"item_name": "まぐろ",
+					"price": 200,
+					"available_options": [
+                        {
+                            "option_id": 1,
+                            "option_name": "わさび"
+                        },
+                        {
+                            "option_id": 2,
+                            "option_name": "特大"
+                        }
+                    ]
+				},
+				{
+					"item_id": 2,
+					"item_name": "サーモン",
+					"price": 180,
+					"available_options": [
+                        {
+                            "option_id": 1,
+                            "option_name": "わさび"
+                        },
+                        {
+                            "option_id": 2,
+                            "option_name": "特大"
+                        }
+                    ]
+				}
+			]
+		},
+		{
+			"genre_id": 2,
+			"genre_name": "軍艦",
+			"items": [
+				{
+					"item_id": 3,
+					"item_name": "いくら",
+					"price": 300,
+					"available_options": []
+				}
+			]
+		},
+		{
+			"genre_id": 3,
+			"genre_name": "サイドメニュー",
+			"items": [
+				{
+					"item_id": 4,
+					"item_name": "から揚げ",
+					"price": 350,
+					"available_options": [
+                        {
+                            "option_id": 3,
+                            "option_name": "チリソース"
+                        },
+                        {
+                            "option_id": 4,
+                            "option_name": "マヨネーズ"
+                        }
+                    ]
+				}
+			]
+		},
+		{
+			"genre_id": 4,
+			"genre_name": "ドリンク",
+			"items": [
+				{
+					"item_id": 5,
+					"item_name": "ウーロン茶",
+					"price": 100,
+					"available_options": []
+				}
+			]
+		}
+	]
+}
